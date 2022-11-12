@@ -7,16 +7,17 @@ import 'package:flutter/src/widgets/framework.dart';
 class Answer extends StatelessWidget {
   final String text;
   final Color color;
-  final Function() answeredTab;
-  const Answer(
-      {super.key,
-      required this.text,
-      required this.color,
-      required this.answeredTab});
+  final void Function()? onPressed;
+  const Answer({
+    super.key,
+    this.onPressed,
+    required this.text,
+    required this.color,
+  });
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: answeredTab,
+      onTap: onPressed,
       child: Padding(
         padding: const EdgeInsets.only(top: 20),
         child: Container(

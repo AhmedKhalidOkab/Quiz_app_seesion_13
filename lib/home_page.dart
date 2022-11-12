@@ -24,38 +24,40 @@ class _HomePageState extends State<HomePage> {
   //     size: 28,
   //   ),
   // ];
-  List<Icon> scoreTracker = [];
-  int quetionIndex = 0;
-  bool answerScore = false;
-  bool asnwerselected = false;
   bool endQuiz = false;
+  List<Icon> Scoretracker = [];
+  int quetionIndex = 0;
+  bool asnwerselected = false;
   int totalScoreIndex = 0;
-
-  void asnwertab(bool asnwersed) {
+  void answerButtonTab(bool answered) {
     setState(() {
       asnwerselected = true;
-      if (asnwersed) {
+      if (answered) {
         totalScoreIndex++;
       }
-      scoreTracker.add(asnwersed
-          ? const Icon(
-              Icons.check_circle,
-              color: Colors.green,
-              size: 28,
-            )
-          : const Icon(
-              Icons.clear,
-              color: Colors.red,
-              size: 28,
-            ));
+      Scoretracker.add(
+        answered
+            ? const Icon(
+                Icons.check_circle,
+                color: Colors.green,
+                size: 28,
+              )
+            : const Icon(
+                Icons.clear,
+                color: Colors.red,
+                size: 28,
+              ),
+      );
 
+      //questions 1- 9
+      // quetionIndex 0-8
       if (quetionIndex + 1 == _questions.length) {
         endQuiz = true;
       }
     });
   }
 
-  void nextquetion() {
+  void nextQuestion() {
     setState(() {
       quetionIndex++;
       asnwerselected = false;
@@ -68,10 +70,10 @@ class _HomePageState extends State<HomePage> {
 
   void restQuiz() {
     setState(() {
-      quetionIndex = 0;
-      scoreTracker = [];
-      totalScoreIndex = 0;
       endQuiz = false;
+      quetionIndex = 0;
+      Scoretracker = [];
+      totalScoreIndex = 0;
     });
   }
 
@@ -98,7 +100,7 @@ class _HomePageState extends State<HomePage> {
               Padding(
                 padding: const EdgeInsets.only(top: 30, left: 35),
                 child: Row(
-                  children: scoreTracker,
+                  children: Scoretracker,
                 ),
               ),
               const SizedBox(
@@ -111,7 +113,7 @@ class _HomePageState extends State<HomePage> {
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: Colors.red,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(15),
                   ),
                   child: Center(
                     child: Text(
@@ -126,39 +128,39 @@ class _HomePageState extends State<HomePage> {
               ),
               ...(_questions[quetionIndex]['answers']
                       as List<Map<String, dynamic>>)
-                  .map(
-                (answer) => Answer(
-                  text: answer['answerText'],
-                  color: asnwerselected
-                      ? answer['score']
-                          ? Colors.green
-                          : Colors.red
-                      : Colors.white,
-                  answeredTab: () {
-                    if (asnwerselected) {
-                      return;
-                    }
-                    asnwertab(answer['score']);
-                  },
-                ),
-              ),
+                  .map((answer) => Answer(
+                          text: answer['answerText'],
+                          color: asnwerselected
+                              ? answer['score']
+                                  ? Colors.green
+                                  : Colors.red
+                              : Colors.white,
+                          onPressed: () {
+                            if (asnwerselected) {
+                              return;
+                            }
+                            answerButtonTab(answer['score']);
+                          })
+
+                      // answer['score'] ? Colors.green : Colors.red),
+                      ),
               const SizedBox(
                 height: 20,
               ),
               CustomButtom(
-                text: endQuiz ? 'Restat Quiz' : 'Next Quetion',
+                text: endQuiz ? 'Restart Quiz' : 'Next Question',
                 onPressed: () {
                   if (!asnwerselected) {
                     return;
                   }
-                  nextquetion();
+                  nextQuestion();
                 },
               ),
               const SizedBox(
                 height: 50,
               ),
               Text(
-                'score :  ${totalScoreIndex} ',
+                'score :  ${totalScoreIndex}',
                 style: TextStyle(fontSize: 18),
               ),
             ],
