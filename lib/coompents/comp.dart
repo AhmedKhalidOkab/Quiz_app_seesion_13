@@ -5,7 +5,7 @@ import 'package:flutter/src/widgets/framework.dart';
 class CustomButtom extends StatelessWidget {
   CustomButtom({super.key, required this.text, required this.onPressed});
   final String text;
-  void Function()? onPressed;
+  final onPressed;
   @override
   Widget build(BuildContext context) {
     return InkWell(

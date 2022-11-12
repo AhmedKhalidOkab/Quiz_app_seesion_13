@@ -1,30 +1,85 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:quiz_app2/coompents/answer.dart';
 import 'package:quiz_app2/coompents/comp.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   HomePage({super.key});
-  final List<Icon> iconsIndex = [
-    Icon(
-      Icons.check_circle,
-      color: Colors.green,
-      size: 28,
-    ),
-    Icon(
-      Icons.clear,
-      color: Colors.red,
-      size: 28,
-    ),
-  ];
-  final int quetionIndex = 0;
+
   @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  // final List<Icon> iconsIndex = [
+  //   const Icon(
+  //     Icons.check_circle,
+  //     color: Colors.green,
+  //     size: 28,
+  //   ),
+  //   const Icon(
+  //     Icons.clear,
+  //     color: Colors.red,
+  //     size: 28,
+  //   ),
+  // ];
+  List<Icon> scoreTracker = [];
+  int quetionIndex = 0;
+  bool answerScore = false;
+  bool asnwerselected = false;
+  bool endQuiz = false;
+  int totalScoreIndex = 0;
+
+  void asnwertab(bool asnwersed) {
+    setState(() {
+      asnwerselected = true;
+      if (asnwersed) {
+        totalScoreIndex++;
+      }
+      scoreTracker.add(asnwersed
+          ? const Icon(
+              Icons.check_circle,
+              color: Colors.green,
+              size: 28,
+            )
+          : const Icon(
+              Icons.clear,
+              color: Colors.red,
+              size: 28,
+            ));
+
+      if (quetionIndex + 1 == _questions.length) {
+        endQuiz = true;
+      }
+    });
+  }
+
+  void nextquetion() {
+    setState(() {
+      quetionIndex++;
+      asnwerselected = false;
+      totalScoreIndex++;
+    });
+    if (quetionIndex >= _questions.length) {
+      restQuiz();
+    }
+  }
+
+  void restQuiz() {
+    setState(() {
+      quetionIndex = 0;
+      scoreTracker = [];
+      totalScoreIndex = 0;
+      endQuiz = false;
+    });
+  }
+
   Widget build(BuildContext context) {
     return Stack(
       children: [
         Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             image: DecorationImage(
               image:
                   AssetImage("assets/images/mario-aceituno-fondo-quiz-v5.jpg"),
@@ -41,52 +96,69 @@ class HomePage extends StatelessWidget {
           body: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.only(left: 35),
+                padding: const EdgeInsets.only(top: 30, left: 35),
                 child: Row(
-                  children: [
-                    if (iconsIndex == 0)
-                      SizedBox(
-                        height: 100,
-                      )
-                    else
-                      ...iconsIndex
-                  ],
+                  children: scoreTracker,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 40, right: 20),
+                padding: const EdgeInsets.only(top: 30, left: 40, right: 20),
                 child: Container(
-                  child: Text(
-                    "${_questions[quetionIndex]['question']}",
-                    style: TextStyle(fontSize: 22, color: Colors.purple),
+                  height: 120,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Center(
+                    child: Text(
+                      "${_questions[quetionIndex]['question']}",
+                      style: const TextStyle(fontSize: 22, color: Colors.white),
+                    ),
                   ),
                 ),
               ),
-              SizedBox(
-                height: 60,
+              const SizedBox(
+                height: 35,
               ),
               ...(_questions[quetionIndex]['answers']
-                      as List<Map<String, Object>>)
+                      as List<Map<String, dynamic>>)
                   .map(
                 (answer) => Answer(
                   text: answer['answerText'],
+                  color: asnwerselected
+                      ? answer['score']
+                          ? Colors.green
+                          : Colors.red
+                      : Colors.white,
+                  answeredTab: () {
+                    if (asnwerselected) {
+                      return;
+                    }
+                    asnwertab(answer['score']);
+                  },
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               CustomButtom(
-                text: 'Next',
-                onPressed: () {},
+                text: endQuiz ? 'Restat Quiz' : 'Next Quetion',
+                onPressed: () {
+                  if (!asnwerselected) {
+                    return;
+                  }
+                  nextquetion();
+                },
               ),
-              SizedBox(
+              const SizedBox(
                 height: 50,
               ),
               Text(
-                'Score: 0/10',
+                'score :  ${totalScoreIndex} ',
                 style: TextStyle(fontSize: 18),
               ),
             ],
